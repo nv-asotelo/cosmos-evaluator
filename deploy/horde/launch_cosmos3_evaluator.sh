@@ -65,13 +65,17 @@ fi
 
 docker network create "$NETWORK" >/dev/null 2>&1 || true
 
+NIM_GPU_ARGS=(--gpus all)
+if docker info --format '{{json .Runtimes}}' | grep -q '"nvidia"'; then
+  NIM_GPU_ARGS=(--runtime=nvidia "${NIM_GPU_ARGS[@]}")
+fi
+
 printf '%s\n' "$NGC_API_KEY" | docker login nvcr.io --username '$oauthtoken' --password-stdin >/dev/null
 docker pull "$NIM_IMAGE"
 
 docker_run_replace "$NIM_CONTAINER" \
   --network "$NETWORK" \
-  --runtime=nvidia \
-  --gpus all \
+  "${NIM_GPU_ARGS[@]}" \
   --shm-size=32GB \
   -e NGC_API_KEY \
   -e "NIM_MODEL_SIZE=$NIM_MODEL_SIZE" \
