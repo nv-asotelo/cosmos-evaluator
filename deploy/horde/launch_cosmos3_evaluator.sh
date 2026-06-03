@@ -10,6 +10,10 @@ LOCAL_NIM_CACHE="${LOCAL_NIM_CACHE:-$HOME/.cache/nim}"
 
 NIM_IMAGE="${NIM_IMAGE:-nvcr.io/nim/nvidia/cosmos3-reasoner:1.7.0}"
 NIM_MODEL_SIZE="${NIM_MODEL_SIZE:-super}"
+if [ -z "${NIM_MODEL_PROFILE:-}" ] && [ "$NIM_MODEL_SIZE" = "nano" ]; then
+  # Cosmos3 Reasoner 1.7.0 Nano FP8 profile for L40S-class 48 GB GPUs.
+  NIM_MODEL_PROFILE="17fedc428e5a9220fae87b540fc9f324eb9e521d35d733de5fe87253db14e6e7"
+fi
 NIM_CONTAINER="${NIM_CONTAINER:-cosmos3-nim}"
 NIM_PORT="${NIM_PORT:-8000}"
 
@@ -69,6 +73,21 @@ NIM_GPU_ARGS=(--gpus all)
 if docker info --format '{{json .Runtimes}}' | grep -q '"nvidia"'; then
   NIM_GPU_ARGS=(--runtime=nvidia "${NIM_GPU_ARGS[@]}")
 fi
+NIM_ENV_ARGS=(
+  -e NGC_API_KEY
+  -e "NIM_MODEL_SIZE=$NIM_MODEL_SIZE"
+)
+for var_name in \
+  NIM_MODEL_PROFILE \
+  NIM_KVCACHE_PERCENT \
+  NIM_MAX_NUM_BATCHED_TOKENS \
+  NIM_MAX_NUM_SEQS \
+  NIM_COMPILATION_CONFIG \
+  PYTORCH_CUDA_ALLOC_CONF; do
+  if [ -n "${!var_name:-}" ]; then
+    NIM_ENV_ARGS+=(-e "$var_name=${!var_name}")
+  fi
+done
 
 printf '%s\n' "$NGC_API_KEY" | docker login nvcr.io --username '$oauthtoken' --password-stdin >/dev/null
 docker pull "$NIM_IMAGE"
@@ -77,8 +96,7 @@ docker_run_replace "$NIM_CONTAINER" \
   --network "$NETWORK" \
   "${NIM_GPU_ARGS[@]}" \
   --shm-size=32GB \
-  -e NGC_API_KEY \
-  -e "NIM_MODEL_SIZE=$NIM_MODEL_SIZE" \
+  "${NIM_ENV_ARGS[@]}" \
   -v "$LOCAL_NIM_CACHE:/opt/nim/.cache" \
   -u "$(id -u)" \
   -p "$NIM_PORT:8000" \
