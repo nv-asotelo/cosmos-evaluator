@@ -178,6 +178,7 @@ class PresetProcessor:
         presets: Dict[str, str],
         keyframe_interval_s: float = 2.0,
         keyframe_width: int = 640,
+        max_frames: Optional[int] = None,
         temperature: float = 0.0,
     ) -> Dict:
         """Run a preset check for the provided video and preset inputs.
@@ -190,6 +191,7 @@ class PresetProcessor:
                 road_surface_conditions.
             keyframe_interval_s: Sampling interval in seconds.
             keyframe_width: keyframe width for frame resize.
+            max_frames: Maximum number of sampled frames to send to the VLM.
             temperature: VLM sampling temperature.
 
         Returns:
@@ -206,9 +208,10 @@ class PresetProcessor:
         """
         start_time_s = time.time()
         self.logger.debug(
-            "Extracting frames | interval=%.2fs width=%s jpeg_quality=%d",
+            "Extracting frames | interval=%.2fs width=%s max_frames=%s jpeg_quality=%d",
             keyframe_interval_s,
             str(keyframe_width),
+            str(max_frames),
             utils.JPEG_QUALITY,
         )
 
@@ -217,6 +220,7 @@ class PresetProcessor:
             interval_seconds=keyframe_interval_s,
             jpeg_quality=utils.JPEG_QUALITY,
             target_width=keyframe_width,
+            max_frames=max_frames,
         )
         if not frames:
             raise ValueError("No frames extracted from video; adjust interval or check the input video")
@@ -300,6 +304,8 @@ def process_preset(
 
     keyframe_interval_s = float(config.get("keyframe_interval_s", 2.0))
     keyframe_width = int(config.get("keyframe_width", 640))
+    max_frames_value = config.get("max_frames")
+    max_frames = int(max_frames_value) if max_frames_value is not None else None
 
     processor = PresetProcessor(endpoint_type=endpoint)
     return processor.process(
@@ -307,5 +313,6 @@ def process_preset(
         presets=preset_conditions,
         keyframe_interval_s=keyframe_interval_s,
         keyframe_width=keyframe_width,
+        max_frames=max_frames,
         temperature=temperature,
     )

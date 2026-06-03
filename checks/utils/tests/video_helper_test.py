@@ -541,6 +541,38 @@ class TestGetVideoFPS(unittest.TestCase):
         mock_cap_cls.assert_called_once_with("/bad/video.mp4")
 
 
+class TestExtractKeyframes(unittest.TestCase):
+    @patch("cv2.VideoCapture")
+    def test_max_frames_samples_across_timeline(self, mock_cap_cls):
+        cap = MagicMock()
+        cap.isOpened.return_value = True
+
+        def get_prop(prop):
+            if prop == video.cv2.CAP_PROP_FPS:
+                return 10.0
+            if prop == video.cv2.CAP_PROP_FRAME_COUNT:
+                return 100
+            return 0
+
+        cap.get.side_effect = get_prop
+        cap.read.return_value = (True, np.full((36, 64, 3), 127, dtype=np.uint8))
+        mock_cap_cls.return_value = cap
+
+        frames = video.extract_keyframes("/path/to/video.mp4", interval_seconds=1.0, max_frames=5)
+
+        self.assertEqual(len(frames), 5)
+        cap.set.assert_has_calls(
+            [
+                call(video.cv2.CAP_PROP_POS_FRAMES, 0),
+                call(video.cv2.CAP_PROP_POS_FRAMES, 20),
+                call(video.cv2.CAP_PROP_POS_FRAMES, 40),
+                call(video.cv2.CAP_PROP_POS_FRAMES, 70),
+                call(video.cv2.CAP_PROP_POS_FRAMES, 90),
+            ]
+        )
+        cap.release.assert_called_once()
+
+
 class TestVideoOverlayHelper(unittest.TestCase):
     """Tests for VideoOverlayHelper class."""
 

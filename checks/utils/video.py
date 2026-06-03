@@ -322,6 +322,7 @@ def extract_keyframes(
     interval_seconds: float,
     jpeg_quality: int = 85,
     target_width: int | None = None,
+    max_frames: int | None = None,
 ) -> List[bytes]:
     """
     Sample frames uniformly by time from the input video and return a list of JPEG bytes.
@@ -331,6 +332,7 @@ def extract_keyframes(
         interval_seconds: Sample a frame approximately every N seconds
         jpeg_quality: JPEG quality (1-100), defaults to 85
         target_width: If provided, resize frames by width while maintaining aspect ratio
+        max_frames: If provided, stop after this many frames
 
     Returns:
         List of JPEG-encoded frames as bytes
@@ -340,6 +342,8 @@ def extract_keyframes(
     """
     if interval_seconds <= 0:
         raise ValueError("interval_seconds must be > 0")
+    if max_frames is not None and max_frames <= 0:
+        raise ValueError("max_frames must be > 0 when provided")
 
     cap = cv2.VideoCapture(video_path)
     try:
@@ -351,24 +355,51 @@ def extract_keyframes(
             logger.warning("Invalid FPS detected for {}, using fallback of 30 FPS".format(video_path))
             fps = 30.0
         frames_per_interval = max(round(fps * interval_seconds), 1)
+        total_frames = int(cap.get(cv2.CAP_PROP_FRAME_COUNT) or 0)
 
         jpeg_params = [int(cv2.IMWRITE_JPEG_QUALITY), int(np.clip(jpeg_quality, 1, 100))]
+
+        def encode_frame(frame: np.ndarray) -> bytes:
+            if target_width is not None and int(target_width) > 0:
+                orig_h, orig_w = int(frame.shape[0]), int(frame.shape[1])
+                if orig_w > 0:
+                    new_w = int(target_width)
+                    new_h = max(1, round(orig_h * (new_w / float(orig_w))))
+                    frame = cv2.resize(frame, (new_w, new_h), interpolation=cv2.INTER_AREA)
+            ok, buf = cv2.imencode(".jpg", frame, jpeg_params)
+            if not ok:
+                raise ValueError("Failed to encode frame to JPEG")
+            return buf.tobytes()
+
+        if max_frames is not None and total_frames > 0:
+            candidate_indices = list(range(0, total_frames, frames_per_interval)) or [0]
+            if len(candidate_indices) > max_frames:
+                if max_frames == 1:
+                    selected_indices = [candidate_indices[0]]
+                else:
+                    selected_indices = [
+                        candidate_indices[round(i * (len(candidate_indices) - 1) / (max_frames - 1))]
+                        for i in range(max_frames)
+                    ]
+            else:
+                selected_indices = candidate_indices
+
+            collected = []
+            for frame_index in selected_indices:
+                cap.set(cv2.CAP_PROP_POS_FRAMES, frame_index)
+                success, frame = cap.read()
+                if success:
+                    collected.append(encode_frame(frame))
+            return collected
 
         frame_index = 0
         collected: List[bytes] = []
         success, frame = cap.read()
         while success:
             if frame_index % frames_per_interval == 0:
-                if target_width is not None and int(target_width) > 0:
-                    orig_h, orig_w = int(frame.shape[0]), int(frame.shape[1])
-                    if orig_w > 0:
-                        new_w = int(target_width)
-                        new_h = max(1, round(orig_h * (new_w / float(orig_w))))
-                        frame = cv2.resize(frame, (new_w, new_h), interpolation=cv2.INTER_AREA)
-                ok, buf = cv2.imencode(".jpg", frame, jpeg_params)
-                if not ok:
-                    raise ValueError("Failed to encode frame to JPEG")
-                collected.append(buf.tobytes())
+                collected.append(encode_frame(frame))
+                if max_frames is not None and len(collected) >= max_frames:
+                    break
             frame_index += 1
             success, frame = cap.read()
 

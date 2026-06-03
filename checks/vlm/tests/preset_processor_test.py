@@ -533,6 +533,7 @@ class TestProcessPresetFunction(unittest.TestCase):
                 "model": {"endpoint": "azure_openai", "temperature": 0.2},
                 "keyframe_interval_s": 1.5,
                 "keyframe_width": 800,
+                "max_frames": 4,
             }
 
             result = process_preset(video_path, preset_conditions, preset_check_config)
@@ -546,6 +547,7 @@ class TestProcessPresetFunction(unittest.TestCase):
                 presets=preset_conditions,
                 keyframe_interval_s=1.5,
                 keyframe_width=800,
+                max_frames=4,
                 temperature=0.2,
             )
 
@@ -590,6 +592,7 @@ class TestProcessPresetFunction(unittest.TestCase):
         mock_processor.process.assert_called_once()
         call_kwargs = mock_processor.process.call_args[1]
         self.assertEqual(call_kwargs.get("keyframe_width"), 640)
+        self.assertIsNone(call_kwargs.get("max_frames"))
 
     @patch("checks.vlm.preset_processor.PresetProcessor.get_default_config")
     @patch("checks.vlm.preset_processor.PresetProcessor")
@@ -623,6 +626,7 @@ class TestProcessPresetFunction(unittest.TestCase):
             presets=preset_conditions,
             keyframe_interval_s=2.0,  # default
             keyframe_width=640,  # default
+            max_frames=None,  # default
             temperature=0.0,  # default
         )
 
@@ -658,6 +662,7 @@ class TestProcessPresetFunction(unittest.TestCase):
             presets=preset_conditions,
             keyframe_interval_s=3.0,
             keyframe_width=1024,
+            max_frames=None,
             temperature=0.0,
         )
 
