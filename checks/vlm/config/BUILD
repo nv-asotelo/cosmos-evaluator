@@ -20,6 +20,7 @@ filegroup(
     ],
     visibility = [
         "//checks/vlm:__pkg__",
+        "//services/attribute_verification:__pkg__",
     ],
 )
 
