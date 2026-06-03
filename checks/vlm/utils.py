@@ -277,7 +277,19 @@ def call_lang_model(
                 kwargs[k] = v
     logger.debug("Calling VLM | model=%s temperature=%.2f", model, temperature)
     result = client.chat.completions.create(**kwargs)
-    return result.choices[0].message.content
+    content = result.choices[0].message.content
+    if isinstance(content, str) and content.strip():
+        return content
+    if isinstance(content, list):
+        parts = [
+            str(item.get("text"))
+            for item in content
+            if isinstance(item, dict) and item.get("type") == "text" and item.get("text")
+        ]
+        if parts:
+            return "\n".join(parts)
+    finish_reason = getattr(result.choices[0], "finish_reason", None)
+    raise ValueError(f"Model returned no text content; finish_reason={finish_reason}")
 
 
 def _is_temperature_supported(model: str) -> bool:

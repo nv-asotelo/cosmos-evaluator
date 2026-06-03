@@ -573,6 +573,7 @@ class TestProcessPresetFunction(unittest.TestCase):
                 keyframe_interval_s=1.5,
                 keyframe_width=800,
                 max_frames=4,
+                max_tokens=None,
                 temperature=0.2,
             )
 

@@ -57,6 +57,7 @@ av.vlm:
     keyframe_width: 640
     model:
       endpoint: qwen3.5-397b-a17b
+      max_tokens: 2048
       temperature: 0.0
     timeout_seconds: 90
 

@@ -187,6 +187,7 @@ class PresetProcessor:
         keyframe_interval_s: float = 2.0,
         keyframe_width: int = 640,
         max_frames: Optional[int] = None,
+        max_tokens: Optional[int] = None,
         temperature: float = 0.0,
     ) -> Dict:
         """Run a preset check for the provided video and preset inputs.
@@ -200,6 +201,7 @@ class PresetProcessor:
             keyframe_interval_s: Sampling interval in seconds.
             keyframe_width: keyframe width for frame resize.
             max_frames: Maximum number of sampled frames to send to the VLM.
+            max_tokens: Maximum number of output tokens to request from the VLM.
             temperature: VLM sampling temperature.
 
         Returns:
@@ -261,6 +263,7 @@ class PresetProcessor:
             model=self.model,
             messages=messages,
             temperature=temperature,
+            extra_params={"max_tokens": max_tokens},
         )
         self.logger.debug("Response text: %s", response_text)
 
@@ -314,6 +317,8 @@ def process_preset(
     keyframe_width = int(config.get("keyframe_width", 640))
     max_frames_value = config.get("max_frames")
     max_frames = int(max_frames_value) if max_frames_value is not None else None
+    max_tokens_value = model_cfg.get("max_tokens")
+    max_tokens = int(max_tokens_value) if max_tokens_value is not None else None
 
     processor = PresetProcessor(endpoint_type=endpoint)
     return processor.process(
@@ -322,5 +327,6 @@ def process_preset(
         keyframe_interval_s=keyframe_interval_s,
         keyframe_width=keyframe_width,
         max_frames=max_frames,
+        max_tokens=max_tokens,
         temperature=temperature,
     )
