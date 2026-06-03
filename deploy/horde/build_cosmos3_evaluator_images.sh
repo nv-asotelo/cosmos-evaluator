@@ -6,7 +6,9 @@ if [ ! -f build/env_setup.sh ]; then
   exit 1
 fi
 
+set +u
 . build/env_setup.sh
+set -u
 
 dazel run //services/vlm:image_load
 dazel run //services/attribute_verification:image_load
