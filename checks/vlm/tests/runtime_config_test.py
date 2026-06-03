@@ -28,6 +28,11 @@ from checks.vlm.runtime_config import (
 
 def write_endpoints(tmp: Path) -> str:
     endpoints = {
+        "qwen3.5-397b-a17b": {
+            "base_url": "https://integrate.api.nvidia.com/v1",
+            "model": "qwen/qwen3.5-397b-a17b",
+            "env_var": "BUILD_NVIDIA_API_KEY",
+        },
         "cosmos3-super-reasoner": {
             "base_url": "http://cosmos3-nim:8000/v1",
             "model": "nvidia/cosmos3-super-reasoner",
@@ -129,14 +134,14 @@ class TestRuntimeConfig(unittest.TestCase):
             self.assertEqual(resolved["vlm_verification"]["vlm"]["endpoint"], "request")
             self.assertEqual(resolved["vlm_verification"]["vlm"]["model"], "request-model")
 
-    def test_summary_defaults_to_cosmos3(self):
+    def test_summary_defaults_to_hosted_qwen(self):
         with tempfile.TemporaryDirectory() as td:
             tmp = Path(td)
             endpoints_path = write_endpoints(tmp)
 
             summary = runtime_summary(endpoints_path, str(tmp / "missing.json"))
 
-            self.assertEqual(summary["active_endpoint"], "cosmos3-super-reasoner")
+            self.assertEqual(summary["active_endpoint"], "qwen3.5-397b-a17b")
 
 
 if __name__ == "__main__":

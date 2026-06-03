@@ -130,8 +130,8 @@ class TestVLMAPI(unittest.TestCase):
     @patch(
         "services.vlm.rest_api_common.runtime_summary",
         return_value={
-            "active_endpoint": "cosmos3-super-reasoner",
-            "active": {"model": "nvidia/cosmos3-super-reasoner"},
+            "active_endpoint": "qwen3.5-397b-a17b",
+            "active": {"model": "qwen/qwen3.5-397b-a17b"},
             "available_endpoints": [],
             "state_file": "/tmp/runtime.json",
             "state": {},
@@ -143,7 +143,7 @@ class TestVLMAPI(unittest.TestCase):
         self.assertEqual(response.status_code, HTTPStatus.OK)
         data = response.json()
         self.assertTrue(data["success"])
-        self.assertEqual(data["data"]["active_endpoint"], "cosmos3-super-reasoner")
+        self.assertEqual(data["data"]["active_endpoint"], "qwen3.5-397b-a17b")
 
     @patch(
         "services.vlm.rest_api_common.set_active_endpoint",

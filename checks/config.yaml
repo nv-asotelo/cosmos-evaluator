@@ -56,7 +56,7 @@ av.vlm:
     keyframe_interval_s: 2.0
     keyframe_width: 640
     model:
-      endpoint: cosmos3-super-reasoner
+      endpoint: qwen3.5-397b-a17b
       temperature: 0.0
     timeout_seconds: 90
 
@@ -103,8 +103,8 @@ metropolis.attribute_verification:
       \ JSON object with no additional text or formatting.\n"
   vlm_verification:
     vlm:
-      endpoint: "http://cosmos3-nim:8000/v1"
-      model: "nvidia/cosmos3-super-reasoner"
+      endpoint: "https://integrate.api.nvidia.com/v1"
+      model: "qwen/qwen3.5-397b-a17b"
     parameters:
       frequency_penalty: 0.0
       max_tokens: 10

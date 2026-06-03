@@ -23,7 +23,7 @@ from checks.vlm.client_manager import ClientManager
 from utils.bazel import get_runfiles_path
 
 
-DEFAULT_ENDPOINT = "cosmos3-super-reasoner"
+DEFAULT_ENDPOINT = "qwen3.5-397b-a17b"
 RUNTIME_ENDPOINT_ENV = "COSMOS_EVALUATOR_VLM_ENDPOINT"
 RUNTIME_STATE_ENV = "COSMOS_EVALUATOR_VLM_RUNTIME_CONFIG"
 DEFAULT_RUNTIME_STATE = "~/.cosmos_evaluator/vlm_runtime.json"

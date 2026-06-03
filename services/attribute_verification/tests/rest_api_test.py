@@ -84,8 +84,8 @@ class TestAttributeVerificationAPI(unittest.TestCase):
         with mock.patch(
             "services.attribute_verification.rest_api.runtime_summary",
             return_value={
-                "active_endpoint": "cosmos3-super-reasoner",
-                "active": {"model": "nvidia/cosmos3-super-reasoner"},
+                "active_endpoint": "qwen3.5-397b-a17b",
+                "active": {"model": "qwen/qwen3.5-397b-a17b"},
                 "available_endpoints": [],
                 "state_file": "/tmp/runtime.json",
                 "state": {},
@@ -96,7 +96,7 @@ class TestAttributeVerificationAPI(unittest.TestCase):
         self.assertEqual(response.status_code, 200)
         data = response.json()
         self.assertTrue(data["success"])
-        self.assertEqual(data["data"]["active_endpoint"], "cosmos3-super-reasoner")
+        self.assertEqual(data["data"]["active_endpoint"], "qwen3.5-397b-a17b")
 
     def test_runtime_vlm_switch_endpoint(self) -> None:
         with mock.patch(
