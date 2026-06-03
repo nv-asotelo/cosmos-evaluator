@@ -184,7 +184,7 @@ av.vlm:
     keyframe_interval_s: 2.0
     keyframe_width: 640
     model:
-      endpoint: qwen3.5-397b-a17b
+      endpoint: cosmos3-super-reasoner
       temperature: 0.0
     timeout_seconds: 90
 ```
@@ -194,9 +194,13 @@ av.vlm:
 | `enabled` | `true` | Enable/disable the preset check |
 | `keyframe_interval_s` | `2.0` | Seconds between sampled keyframes. Lower values sample more frames (more thorough but slower). |
 | `keyframe_width` | `640` | Target width for resized keyframes (aspect ratio preserved). Larger values provide more detail to the VLM but increase latency. |
-| `model.endpoint` | `qwen3.5-397b-a17b` | VLM endpoint key (see [Endpoint Configuration](#endpoint-configuration)) |
+| `model.endpoint` | `cosmos3-super-reasoner` | VLM endpoint key (see [Endpoint Configuration](#endpoint-configuration)) |
 | `model.temperature` | `0.0` | Sampling temperature. 0.0 = deterministic output. |
 | `timeout_seconds` | `90` | Request timeout in seconds |
+
+If `preset_check_config.model.endpoint` is omitted from a request, the service
+uses the runtime VLM selection stored by `/runtime/vlm/switch`. Request-level
+endpoint overrides continue to take precedence.
 
 ## Endpoint Configuration
 
@@ -217,6 +221,8 @@ VLM endpoints are defined in `checks/vlm/config/endpoints.json`. Each endpoint s
 
 | Key | Model | Provider |
 |-----|-------|----------|
+| `cosmos3-super-reasoner` | nvidia/cosmos3-super-reasoner | Local Cosmos3 Reasoner NIM (`nvcr.io/nim/nvidia/cosmos3-reasoner:1.7.0`, `NIM_MODEL_SIZE=super`) |
+| `cosmos3-nano-reasoner` | nvidia/cosmos3-nano-reasoner | Local Cosmos3 Reasoner NIM (`NIM_MODEL_SIZE=nano`) |
 | `qwen3.5-397b-a17b` | qwen/qwen3.5-397b-a17b | [NVIDIA NIM](https://build.nvidia.com/) |
 
 ### Using Your Own Endpoint

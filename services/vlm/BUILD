@@ -50,6 +50,7 @@ py_library(
     deps = [
         ":service",
         ":settings",
+        "//checks/vlm:runtime_config",
         "//services:settings_base",
         "//services:utils",
         "//services/framework:service_base",
@@ -57,6 +58,7 @@ py_library(
         "//services/framework/response_formatters:json_response_formatter",
         "//services/framework/storage_providers:factory",
         requirement("fastapi"),
+        requirement("pydantic"),
         requirement("uvicorn"),
     ],
 )

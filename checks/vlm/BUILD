@@ -44,9 +44,28 @@ py_library(
     ],
     deps = [
         ":client_manager",
+        ":runtime_config",
         ":utils",
         "//checks/utils:config_manager",
         "//checks/utils:video",
+        "//utils:bazel",
+    ],
+)
+
+py_library(
+    name = "runtime_config",
+    srcs = ["runtime_config.py"],
+    data = ["//checks/vlm/config:endpoints"],
+    tags = ["no-mypy"],
+    visibility = [
+        "//checks/vlm/tests:__pkg__",
+        "//services/attribute_verification:__pkg__",
+        "//services/attribute_verification/tests:__pkg__",
+        "//services/vlm:__pkg__",
+        "//services/vlm/tests:__pkg__",
+    ],
+    deps = [
+        ":client_manager",
         "//utils:bazel",
     ],
 )

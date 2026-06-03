@@ -35,6 +35,13 @@ py_test(
 )
 
 py_test(
+    name = "runtime_config_test",
+    srcs = ["runtime_config_test.py"],
+    tags = ["no-mypy"],
+    deps = ["//checks/vlm:runtime_config"],
+)
+
+py_test(
     name = "utils_test",
     srcs = ["utils_test.py"],
     tags = ["no-mypy"],

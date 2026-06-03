@@ -30,7 +30,9 @@ from typing import Optional
 
 from fastapi import FastAPI
 from fastapi.responses import JSONResponse
+from pydantic import BaseModel, Field
 
+from checks.vlm.runtime_config import runtime_summary, set_active_endpoint
 from services import utils
 from services.framework.protocols.storage_provider import StorageProvider
 from services.framework.response_formatters.json_response_formatter import JsonResponseFormatter
@@ -51,6 +53,10 @@ storage: Optional[StorageProvider] = None
 
 # Initialize request handlers and response formatters
 json_formatter = JsonResponseFormatter()
+
+
+class VlmRuntimeSwitchRequest(BaseModel):
+    endpoint: str = Field(..., description="Configured VLM endpoint key to make active", min_length=1)
 
 
 @asynccontextmanager
@@ -152,4 +158,42 @@ async def get_default_config() -> JSONResponse:
         )
     except Exception as e:
         logger.error(f"Error getting default config: {e}")
+        return await json_formatter.format_error(e, status_code=500)
+
+
+@app.get("/runtime/vlm")
+async def get_vlm_runtime() -> JSONResponse:
+    """Get active VLM endpoint and configured endpoint metadata."""
+    try:
+        return await json_formatter.format_success(runtime_summary())
+    except Exception as e:
+        logger.error(f"Error getting VLM runtime: {e}")
+        return await json_formatter.format_error(e, status_code=500)
+
+
+@app.get("/runtime/vlm/endpoints")
+async def get_vlm_runtime_endpoints() -> JSONResponse:
+    """List configured VLM endpoints."""
+    try:
+        summary = runtime_summary()
+        return await json_formatter.format_success(
+            {
+                "active_endpoint": summary["active_endpoint"],
+                "available_endpoints": summary["available_endpoints"],
+            }
+        )
+    except Exception as e:
+        logger.error(f"Error getting VLM endpoints: {e}")
+        return await json_formatter.format_error(e, status_code=500)
+
+
+@app.post("/runtime/vlm/switch")
+async def switch_vlm_runtime(request: VlmRuntimeSwitchRequest) -> JSONResponse:
+    """Persist the active VLM endpoint used when requests omit a model override."""
+    try:
+        return await json_formatter.format_success(set_active_endpoint(request.endpoint))
+    except ValueError as e:
+        return await json_formatter.format_error(e, status_code=400)
+    except Exception as e:
+        logger.error(f"Error switching VLM endpoint: {e}")
         return await json_formatter.format_error(e, status_code=500)

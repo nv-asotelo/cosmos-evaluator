@@ -22,6 +22,7 @@ from checks.utils.config_manager import ConfigManager
 from checks.utils.video import extract_keyframes
 from checks.vlm import utils
 from checks.vlm.client_manager import ClientManager
+from checks.vlm.runtime_config import resolve_preset_check_config
 from utils.bazel import get_runfiles_path
 
 
@@ -290,9 +291,7 @@ def process_preset(
     """
 
     # Extract model/config parameters
-    config = PresetProcessor.get_default_config()["preset_check"]
-    if preset_check_config:
-        config.update(preset_check_config)
+    config = resolve_preset_check_config(PresetProcessor.get_default_config()["preset_check"], preset_check_config)
     model_cfg = config.get("model", {})
     endpoint = model_cfg.get("endpoint")
     if not endpoint:

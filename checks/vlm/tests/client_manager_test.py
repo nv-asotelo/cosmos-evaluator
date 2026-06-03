@@ -70,6 +70,28 @@ class TestClientManager(unittest.TestCase):
                     manager.create_client("azure_openai")
                 self.assertIn("Environment variable AZURE_OPENAI_API_KEY is required", str(ctx.exception))
 
+    def test_api_key_optional_uses_placeholder(self):
+        with tempfile.TemporaryDirectory() as td:
+            tmp = Path(td)
+            public = {
+                "local_nim": {
+                    "base_url": "http://localhost:8000/v1",
+                    "model": "nvidia/cosmos3-super-reasoner",
+                    "env_var": "LOCAL_NIM_API_KEY",
+                    "api_key_optional": True,
+                },
+            }
+            public_path = write_json(tmp, "checks/vlm/config/endpoints.json", public)
+
+            with patch.dict(os.environ, {"LOCAL_NIM_API_KEY": ""}, clear=False):
+                with patch("checks.vlm.client_manager.OpenAI") as mock_openai:
+                    manager = ClientManager(public_path)
+                    _, model = manager.create_client("local_nim")
+
+            self.assertEqual(model, "nvidia/cosmos3-super-reasoner")
+            mock_openai.assert_called_once()
+            self.assertEqual(mock_openai.call_args.kwargs["api_key"], "not-used")
+
     def test_private_overrides_public(self):
         with tempfile.TemporaryDirectory() as td:
             tmp = Path(td)

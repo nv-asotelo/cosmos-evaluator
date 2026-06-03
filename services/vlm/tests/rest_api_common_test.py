@@ -127,6 +127,35 @@ class TestVLMAPI(unittest.TestCase):
         self.assertEqual(data["error"]["type"], "Exception")
         self.assertIn("Config loading failed", data["error"]["message"])
 
+    @patch(
+        "services.vlm.rest_api_common.runtime_summary",
+        return_value={
+            "active_endpoint": "cosmos3-super-reasoner",
+            "active": {"model": "nvidia/cosmos3-super-reasoner"},
+            "available_endpoints": [],
+            "state_file": "/tmp/runtime.json",
+            "state": {},
+        },
+    )
+    def test_runtime_vlm_endpoint(self, _mock_runtime: MagicMock) -> None:
+        response = self.client.get("/runtime/vlm")
+
+        self.assertEqual(response.status_code, HTTPStatus.OK)
+        data = response.json()
+        self.assertTrue(data["success"])
+        self.assertEqual(data["data"]["active_endpoint"], "cosmos3-super-reasoner")
+
+    @patch(
+        "services.vlm.rest_api_common.set_active_endpoint",
+        return_value={"active_endpoint": "cosmos3-nano-reasoner"},
+    )
+    def test_runtime_vlm_switch_endpoint(self, mock_switch: MagicMock) -> None:
+        response = self.client.post("/runtime/vlm/switch", json={"endpoint": "cosmos3-nano-reasoner"})
+
+        self.assertEqual(response.status_code, HTTPStatus.OK)
+        self.assertTrue(response.json()["success"])
+        mock_switch.assert_called_once_with("cosmos3-nano-reasoner")
+
     @patch("services.vlm.rest_api_common.storage")
     @patch("services.vlm.rest_api_common.service")
     def test_process_preset_endpoint_success(self, mock_service: MagicMock, mock_storage: MagicMock) -> None:

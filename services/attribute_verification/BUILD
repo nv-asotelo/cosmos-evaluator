@@ -53,6 +53,7 @@ py_library(
     deps = [
         "//checks/attribute_verification:processor",
         "//checks/utils:multistorage",
+        "//checks/vlm:runtime_config",
         "//services/framework:service_base",
         requirement("pydantic"),
     ],
@@ -63,6 +64,7 @@ py_binary(
     srcs = ["rest_api.py"],
     data = [
         ":generate_version_txt",
+        "//checks/vlm/config:endpoints",
         "//utils:git_sha",
     ],
     main = "rest_api.py",
@@ -71,6 +73,7 @@ py_binary(
         ":attribute_verification_service",
         ":settings",
         "//checks/utils:multistorage",
+        "//checks/vlm:runtime_config",
         "//services:settings_base",
         "//services:utils",
         "//services/framework/response_formatters:json_response_formatter",

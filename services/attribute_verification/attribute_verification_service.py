@@ -28,6 +28,7 @@ from pydantic import BaseModel, Field
 
 from checks.attribute_verification.processor import AttributeVerificationProcessor, AttributeVerificationResult
 from checks.utils.multistorage import validate_uri
+from checks.vlm.runtime_config import apply_runtime_attribute_vlm_config, deep_merge
 from services.framework.service_base import ServiceBase
 
 
@@ -80,7 +81,8 @@ class AttributeVerificationService(ServiceBase[AttributeVerificationRequest, Att
     async def process(self, request: AttributeVerificationRequest) -> AttributeVerificationResult:
         config = await AttributeVerificationService.get_default_config()
         if request.config is not None:
-            config.update(request.config)
+            config = deep_merge(config, request.config)
+        config = apply_runtime_attribute_vlm_config(config, request.config)
         config_dir = os.getenv("CONFIG_DIR", None)
         processor = AttributeVerificationProcessor(params=config, config_dir=config_dir, verbose=request.verbose)
         return await processor.process(request.clip_id, request.augmented_video_path)

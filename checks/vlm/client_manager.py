@@ -102,9 +102,12 @@ class ClientManager:
             raise ValueError(f"Invalid endpoint_type: {endpoint_type}.  Please, choose one of: {available_endpoints}")
 
         endpoint_config = self.config[endpoint_type]
-        api_key = os.environ.get(endpoint_config["env_var"])
+        env_var = endpoint_config.get("env_var")
+        api_key = os.environ.get(env_var, "") if env_var else ""
+        if not api_key and endpoint_config.get("api_key_optional"):
+            api_key = endpoint_config.get("api_key_placeholder", "not-used")
         if not api_key:
-            raise ValueError(f"Environment variable {endpoint_config['env_var']} is required")
+            raise ValueError(f"Environment variable {env_var} is required")
 
         default_timeout = 60  # seconds
         if endpoint_type == "azure_openai":

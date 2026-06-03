@@ -167,3 +167,9 @@ Each service also provides a Swagger UI at `/docs` for browsing the API document
 ```
 http://localhost:8000/docs
 ```
+
+## Cosmos3 Super Reasoner on Horde
+
+For a full-stack Horde deployment with a local Cosmos3 Super Reasoner NIM and
+runtime VLM switch endpoints, see
+[Cosmos3 Super Reasoner Horde Deployment](deployment-cosmos3-super-horde.md).

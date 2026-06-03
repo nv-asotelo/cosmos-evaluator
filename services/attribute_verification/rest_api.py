@@ -21,8 +21,10 @@ from typing import Any, AsyncGenerator, Dict, Optional
 
 from fastapi import FastAPI, HTTPException
 from fastapi.responses import JSONResponse
+from pydantic import BaseModel, Field
 
 from checks.utils.multistorage import setup_msc_config
+from checks.vlm.runtime_config import runtime_summary, set_active_endpoint
 from services.attribute_verification.attribute_verification_service import (
     AttributeVerificationRequest,
     AttributeVerificationService,
@@ -77,6 +79,10 @@ app = FastAPI(
 )
 
 json_formatter = JsonResponseFormatter()
+
+
+class VlmRuntimeSwitchRequest(BaseModel):
+    endpoint: str = Field(..., description="Configured VLM endpoint key to make active", min_length=1)
 
 
 @app.get("/health")
@@ -145,6 +151,41 @@ async def get_default_config() -> JSONResponse:
     return await json_formatter.format_success(
         {"default_config": default_config, "description": "Default configuration for attribute verification processing"}
     )
+
+
+@app.get("/runtime/vlm")
+async def get_vlm_runtime() -> JSONResponse:
+    """Get active VLM endpoint and configured endpoint metadata."""
+    try:
+        return await json_formatter.format_success(runtime_summary())
+    except Exception as e:
+        return await json_formatter.format_error(e, status_code=500)
+
+
+@app.get("/runtime/vlm/endpoints")
+async def get_vlm_runtime_endpoints() -> JSONResponse:
+    """List configured VLM endpoints."""
+    try:
+        summary = runtime_summary()
+        return await json_formatter.format_success(
+            {
+                "active_endpoint": summary["active_endpoint"],
+                "available_endpoints": summary["available_endpoints"],
+            }
+        )
+    except Exception as e:
+        return await json_formatter.format_error(e, status_code=500)
+
+
+@app.post("/runtime/vlm/switch")
+async def switch_vlm_runtime(request: VlmRuntimeSwitchRequest) -> JSONResponse:
+    """Persist the active VLM endpoint used when requests omit a VLM override."""
+    try:
+        return await json_formatter.format_success(set_active_endpoint(request.endpoint))
+    except ValueError as e:
+        return await json_formatter.format_error(e, status_code=400)
+    except Exception as e:
+        return await json_formatter.format_error(e, status_code=500)
 
 
 if __name__ == "__main__":

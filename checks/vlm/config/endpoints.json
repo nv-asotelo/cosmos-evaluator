@@ -1,4 +1,24 @@
 {
+  "cosmos3-super-reasoner": {
+    "base_url": "http://cosmos3-nim:8000/v1",
+    "model": "nvidia/cosmos3-super-reasoner",
+    "env_var": "COSMOS3_NIM_API_KEY",
+    "api_key_optional": true,
+    "api_key_placeholder": "not-used",
+    "timeout": 7200,
+    "nim_image": "nvcr.io/nim/nvidia/cosmos3-reasoner:1.7.0",
+    "nim_model_size": "super"
+  },
+  "cosmos3-nano-reasoner": {
+    "base_url": "http://cosmos3-nim:8000/v1",
+    "model": "nvidia/cosmos3-nano-reasoner",
+    "env_var": "COSMOS3_NIM_API_KEY",
+    "api_key_optional": true,
+    "api_key_placeholder": "not-used",
+    "timeout": 7200,
+    "nim_image": "nvcr.io/nim/nvidia/cosmos3-reasoner:1.7.0",
+    "nim_model_size": "nano"
+  },
   "qwen3.5-397b-a17b": {
     "base_url": "https://integrate.api.nvidia.com/v1",
     "model": "qwen/qwen3.5-397b-a17b",

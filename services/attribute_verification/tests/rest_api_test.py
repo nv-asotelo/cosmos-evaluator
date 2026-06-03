@@ -80,6 +80,35 @@ class TestAttributeVerificationAPI(unittest.TestCase):
         self.assertEqual(response.status_code, 503)
         self.assertFalse(response.json()["success"])
 
+    def test_runtime_vlm_endpoint(self) -> None:
+        with mock.patch(
+            "services.attribute_verification.rest_api.runtime_summary",
+            return_value={
+                "active_endpoint": "cosmos3-super-reasoner",
+                "active": {"model": "nvidia/cosmos3-super-reasoner"},
+                "available_endpoints": [],
+                "state_file": "/tmp/runtime.json",
+                "state": {},
+            },
+        ):
+            response = self.client.get("/runtime/vlm")
+
+        self.assertEqual(response.status_code, 200)
+        data = response.json()
+        self.assertTrue(data["success"])
+        self.assertEqual(data["data"]["active_endpoint"], "cosmos3-super-reasoner")
+
+    def test_runtime_vlm_switch_endpoint(self) -> None:
+        with mock.patch(
+            "services.attribute_verification.rest_api.set_active_endpoint",
+            return_value={"active_endpoint": "cosmos3-nano-reasoner"},
+        ) as mock_switch:
+            response = self.client.post("/runtime/vlm/switch", json={"endpoint": "cosmos3-nano-reasoner"})
+
+        self.assertEqual(response.status_code, 200)
+        self.assertTrue(response.json()["success"])
+        mock_switch.assert_called_once_with("cosmos3-nano-reasoner")
+
     def test_process_endpoint(self) -> None:
         """Test process endpoint."""
         dummy_result = AttributeVerificationResult(
