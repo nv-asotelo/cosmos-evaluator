@@ -313,6 +313,31 @@ class TestPresetProcessor(unittest.TestCase):
             self.assertEqual(len(details), 4)
 
     @patch("checks.vlm.client_manager.ClientManager.create_client")
+    def test_parse_response_extracts_fenced_json_without_closing_fence(self, mock_create_client):
+        """Test _parse_response with a markdown fence that is missing its closer."""
+        fake_client = MagicMock()
+        mock_create_client.return_value = (fake_client, "fake-model")
+
+        with tempfile.TemporaryDirectory() as td:
+            tmp = Path(td)
+            prompt_path = self._write_prompt(tmp)
+            proc = PresetProcessor(endpoint_type="azure_openai", prompt_template_path=prompt_path)
+
+            response_json = {
+                "weather": {"score": 1.0, "explanation": "Clear sunny day"},
+                "time_of_day_illumination": {"score": 0.5, "explanation": "Dawn lighting"},
+                "region_geography": {"score": 0.0, "explanation": "Desert region"},
+                "road_surface_conditions": {"score": 1.0, "explanation": "Dry asphalt"},
+            }
+
+            response_with_fence = "```json\n" + json.dumps(response_json)
+
+            overall_score, details = proc._parse_response(response_with_fence, {}, "environment")
+
+            self.assertEqual(overall_score, 0.625)
+            self.assertEqual(len(details), 4)
+
+    @patch("checks.vlm.client_manager.ClientManager.create_client")
     def test_parse_response_invalid_json(self, mock_create_client):
         """Test _parse_response with invalid JSON."""
         fake_client = MagicMock()

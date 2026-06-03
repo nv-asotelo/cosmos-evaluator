@@ -188,13 +188,18 @@ def extract_first_json_object(text: str) -> Optional[str]:
     """
     s = text.strip()
     decoder = json.JSONDecoder()
-    try:
-        first_json_object, _ = decoder.raw_decode(s)
-    except json.JSONDecodeError:
-        logger.error("Failed to extract first JSON object from %s", s)
-        return None
+    for start, char in enumerate(s):
+        if char != "{":
+            continue
+        try:
+            first_json_object, _ = decoder.raw_decode(s[start:])
+        except json.JSONDecodeError:
+            continue
+        if isinstance(first_json_object, dict):
+            return json.dumps(first_json_object)
 
-    return json.dumps(first_json_object) if first_json_object else None
+    logger.error("Failed to extract first JSON object from %s", s)
+    return None
 
 
 def _build_text_content_parts(prompt_text: str, extra_texts: Optional[List[str]] = None) -> List[Dict]:

@@ -107,7 +107,15 @@ class PresetProcessor:
         try:
             obj = json.loads(text)
         except json.JSONDecodeError as e:
-            raise ValueError(f"Model did not return valid JSON: {e}: {text[:200]}") from e
+            extracted = utils.extract_first_json_object(text)
+            if not extracted:
+                raise ValueError(f"Model did not return valid JSON: {e}: {text[:200]}") from e
+            try:
+                obj = json.loads(extracted)
+            except json.JSONDecodeError as extracted_error:
+                raise ValueError(
+                    f"Model did not return valid JSON: {extracted_error}: {extracted[:200]}"
+                ) from extracted_error
 
         scores_for_overall: List[float] = []
         preset_name_l = (preset_name or "").strip().lower()

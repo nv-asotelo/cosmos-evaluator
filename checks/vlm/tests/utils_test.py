@@ -357,8 +357,7 @@ class TestExtractFirstJsonObject(unittest.TestCase):
         """Test extraction when JSON is prefixed with text."""
         text = 'Some text before {"key": "value"} and after'
         result = utils.extract_first_json_object(text)
-        # raw_decode expects JSON at the start, so this returns None
-        self.assertIsNone(result)
+        self.assertEqual(result, '{"key": "value"}')
 
     def test_extract_first_json_object_nested(self):
         """Test extraction of nested JSON object."""
@@ -430,6 +429,12 @@ class TestExtractFirstJsonObject(unittest.TestCase):
         result = utils.extract_first_json_object(text)
         expected_dict = {"key": "value", "number": 42}
         self.assertEqual(result, json.dumps(expected_dict))
+
+    def test_extract_first_json_object_from_unclosed_fence(self):
+        """Test extraction from markdown-fenced JSON even if the fence is unclosed."""
+        text = '```json\n{"key": "value"}'
+        result = utils.extract_first_json_object(text)
+        self.assertEqual(result, '{"key": "value"}')
 
 
 class TestBuildTextContentParts(unittest.TestCase):
