@@ -16,12 +16,24 @@ case "$NIM_MODEL_SIZE" in
   *) VLM_RUNTIME_ENDPOINT="${VLM_RUNTIME_ENDPOINT:-$NIM_MODEL_SIZE}" ;;
 esac
 
-curl -fsS "http://localhost:${NIM_PORT}/v1/models"
-curl -fsS "http://localhost:${VLM_PORT}/health"
-curl -fsS "http://localhost:${CONTROL_PORT}/runtime/vlm"
-curl -fsS "http://localhost:${ATTRIBUTE_PORT}/health"
-curl -fsS "http://localhost:${HALLUCINATION_PORT}/health"
-curl -fsS "http://localhost:${OBSTACLE_PORT}/health"
+wait_url() {
+  local url="$1"
+  local attempts="${2:-60}"
+  for _ in $(seq 1 "$attempts"); do
+    if curl -fsS "$url"; then
+      return 0
+    fi
+    sleep 5
+  done
+  curl -fsS "$url"
+}
+
+wait_url "http://localhost:${NIM_PORT}/v1/models"
+wait_url "http://localhost:${VLM_PORT}/health"
+wait_url "http://localhost:${CONTROL_PORT}/runtime/vlm"
+wait_url "http://localhost:${ATTRIBUTE_PORT}/health"
+wait_url "http://localhost:${HALLUCINATION_PORT}/health"
+wait_url "http://localhost:${OBSTACLE_PORT}/health"
 
 curl -fsS -X POST "http://localhost:${CONTROL_PORT}/runtime/vlm/switch" \
   -H "Content-Type: application/json" \

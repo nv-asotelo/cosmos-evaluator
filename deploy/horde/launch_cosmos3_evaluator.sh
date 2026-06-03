@@ -137,7 +137,7 @@ docker_run_replace cosmos-evaluator-vlm \
 docker_run_replace cosmos-evaluator-attribute \
   --network "$NETWORK" \
   "${COMMON_SERVICE_ENV[@]}" \
-  -p "$ATTRIBUTE_PORT:8000" \
+  -p "$ATTRIBUTE_PORT:8080" \
   "$ATTRIBUTE_IMAGE"
 
 docker_run_replace cosmos-evaluator-hallucination \
