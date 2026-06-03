@@ -44,9 +44,9 @@
 					"version": "1.43-3"
 				},
 				{
-					"key": "libgcrypt20_1.9.4-3ubuntu3_amd64",
+					"key": "libgcrypt20_1.9.4-3ubuntu3.2_amd64",
 					"name": "libgcrypt20",
-					"version": "1.9.4-3ubuntu3"
+					"version": "1.9.4-3ubuntu3.2"
 				},
 				{
 					"key": "libbz2-1.0_1.0.8-5build1_amd64",
@@ -104,9 +104,9 @@
 					"version": "1.4.8+dfsg-3build1"
 				},
 				{
-					"key": "liblzma5_5.2.5-2ubuntu1_amd64",
+					"key": "liblzma5_5.2.5-2ubuntu1.1_amd64",
 					"name": "liblzma5",
-					"version": "5.2.5-2ubuntu1"
+					"version": "5.2.5-2ubuntu1.1"
 				},
 				{
 					"key": "libksba8_1.6.0-2ubuntu0.2_amd64",
@@ -199,9 +199,9 @@
 					"version": "5.3.28+dfsg1-0.8ubuntu3"
 				},
 				{
-					"key": "libgnutls30_3.7.3-4ubuntu1.8_amd64",
+					"key": "libgnutls30_3.7.3-4ubuntu1.9_amd64",
 					"name": "libgnutls30",
-					"version": "3.7.3-4ubuntu1.8"
+					"version": "3.7.3-4ubuntu1.9"
 				},
 				{
 					"key": "libunistring2_1.0-1_amd64",
@@ -319,9 +319,9 @@
 					"version": "1.19.2-2ubuntu0.7"
 				},
 				{
-					"key": "libssl3_3.0.2-0ubuntu1.21_amd64",
+					"key": "libssl3_3.0.2-0ubuntu1.23_amd64",
 					"name": "libssl3",
-					"version": "3.0.2-0ubuntu1.21"
+					"version": "3.0.2-0ubuntu1.23"
 				},
 				{
 					"key": "libkeyutils1_1.6.1-2ubuntu3_amd64",
@@ -468,13 +468,13 @@
 		{
 			"arch": "amd64",
 			"dependencies": [],
-			"key": "libgcrypt20_1.9.4-3ubuntu3_amd64",
+			"key": "libgcrypt20_1.9.4-3ubuntu3.2_amd64",
 			"name": "libgcrypt20",
-			"sha256": "fe7d7e9f83b280f4fafaaa3852e462f43a9e854bc268e06667da2bf1b3e9d658",
+			"sha256": "6911ff5ca27d03485749691c3380c4a529e1e13e3167b5f5a01e9a81943c64bd",
 			"urls": [
-				"https://archive.ubuntu.com/ubuntu/pool/main/libg/libgcrypt20/libgcrypt20_1.9.4-3ubuntu3_amd64.deb"
+				"https://archive.ubuntu.com/ubuntu/pool/main/libg/libgcrypt20/libgcrypt20_1.9.4-3ubuntu3.2_amd64.deb"
 			],
-			"version": "1.9.4-3ubuntu3"
+			"version": "1.9.4-3ubuntu3.2"
 		},
 		{
 			"arch": "amd64",
@@ -600,13 +600,13 @@
 		{
 			"arch": "amd64",
 			"dependencies": [],
-			"key": "liblzma5_5.2.5-2ubuntu1_amd64",
+			"key": "liblzma5_5.2.5-2ubuntu1.1_amd64",
 			"name": "liblzma5",
-			"sha256": "8f1c46e7d3f5102a5e4fdca7c949728a343ba71c2a7c124118df2c13d4c444f7",
+			"sha256": "af77f099e7fa95a31267023535832804382fa66572a6b38002187be6e15116cb",
 			"urls": [
-				"https://archive.ubuntu.com/ubuntu/pool/main/x/xz-utils/liblzma5_5.2.5-2ubuntu1_amd64.deb"
+				"https://archive.ubuntu.com/ubuntu/pool/main/x/xz-utils/liblzma5_5.2.5-2ubuntu1.1_amd64.deb"
 			],
-			"version": "5.2.5-2ubuntu1"
+			"version": "5.2.5-2ubuntu1.1"
 		},
 		{
 			"arch": "amd64",
@@ -809,13 +809,13 @@
 		{
 			"arch": "amd64",
 			"dependencies": [],
-			"key": "libgnutls30_3.7.3-4ubuntu1.8_amd64",
+			"key": "libgnutls30_3.7.3-4ubuntu1.9_amd64",
 			"name": "libgnutls30",
-			"sha256": "10598ecd73aa1c99966199c219c0d3c3e1096a778a9e1a389bba934e27cc3dd1",
+			"sha256": "65e08f0b5d1e620cc5cc9478cd1035f83ea752a6fae23141afd2d111a8f6c555",
 			"urls": [
-				"https://archive.ubuntu.com/ubuntu/pool/main/g/gnutls28/libgnutls30_3.7.3-4ubuntu1.8_amd64.deb"
+				"https://archive.ubuntu.com/ubuntu/pool/main/g/gnutls28/libgnutls30_3.7.3-4ubuntu1.9_amd64.deb"
 			],
-			"version": "3.7.3-4ubuntu1.8"
+			"version": "3.7.3-4ubuntu1.9"
 		},
 		{
 			"arch": "amd64",
@@ -1073,13 +1073,13 @@
 		{
 			"arch": "amd64",
 			"dependencies": [],
-			"key": "libssl3_3.0.2-0ubuntu1.21_amd64",
+			"key": "libssl3_3.0.2-0ubuntu1.23_amd64",
 			"name": "libssl3",
-			"sha256": "6dcb3175065f05d443c1ddcd2111ec8af7df62874d9df0585655c1563dbe2a0c",
+			"sha256": "3f3c87935741455b4bee011785fa2f696d3417a6dc9e2e21321df6cace5f8e9b",
 			"urls": [
-				"https://archive.ubuntu.com/ubuntu/pool/main/o/openssl/libssl3_3.0.2-0ubuntu1.21_amd64.deb"
+				"https://archive.ubuntu.com/ubuntu/pool/main/o/openssl/libssl3_3.0.2-0ubuntu1.23_amd64.deb"
 			],
-			"version": "3.0.2-0ubuntu1.21"
+			"version": "3.0.2-0ubuntu1.23"
 		},
 		{
 			"arch": "amd64",
